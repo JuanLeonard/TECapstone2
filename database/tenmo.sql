@@ -42,6 +42,7 @@ CREATE TABLE status (
 	CONSTRAINT PK_status PRIMARY KEY (status_code),
 	CONSTRAINT UQ_status_name UNIQUE (status_name)
 );
+
 CREATE SEQUENCE seq_transfer_id
   INCREMENT BY 1
   START WITH 5001
@@ -55,6 +56,7 @@ CREATE TABLE transfer(
 	CONSTRAINT PK_transfer PRIMARY KEY (transfer_id),
 	CONSTRAINT FK_transfer FOREIGN KEY (transfer_status) REFERENCES status (status_code)
 );
+
 CREATE TABLE user_transfer(
 	transfer_id int NOT NULL,
 	to_user int NOT NULL,
