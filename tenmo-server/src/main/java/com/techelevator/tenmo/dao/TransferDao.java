@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface TransferDao {
 
-    BigDecimal sendMoney();
+    BigDecimal sendMoney(BigDecimal amount);
 
-    BigDecimal requestMoney();
+    BigDecimal requestMoney(BigDecimal amount);
 
     List<Transfer> list();
 

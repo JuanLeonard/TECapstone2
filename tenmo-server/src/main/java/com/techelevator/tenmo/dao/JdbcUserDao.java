@@ -70,9 +70,8 @@ public class JdbcUserDao implements UserDao {
         } catch (DataAccessException e) {
             return false;
         }
-        //Account accountBalance = new Account();
-        //accountDao.createAccount(newUserId, accountBalance);
-
+        Account newAccount = new Account();
+        accountDao.createAccount(Long.valueOf(newUserId));
 
         return true;
     }

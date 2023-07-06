@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.dao.DataAccessException;
@@ -19,34 +20,35 @@ public class JdbcAccountDao implements AccountDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    Account account = new Account();
-    BigDecimal balance = account.getBalance();
+    //Account account = new Account();
+    //BigDecimal balance = account.getBalance();
 
     @Override
-    boolean createAccount(Long userId, BigDecimal balance){
-
+    public Account createAccount(Long id){
         String sql = "INSERT INTO account (user_id, balance) VALUES (?, ?) RETURNING account_id;";
-        Integer newAccountId;
+        Account newAccount = new Account();
         try{
-            newAccountId = jdbcTemplate.queryForObject(sql, Integer.class, userId, balance);
-        }catch(DataAccessException e){
-            return false;
+            newAccount = jdbcTemplate.queryForObject(sql, Account.class, id, newAccount.getBalance());
+        }catch(CannotGetJdbcConnectionException e){
+            throw new DaoException("Unable to connect to server or database", e);
+        }catch(DataIntegrityViolationException e){
+            throw new DaoException("Data integrity violation", e);
         }
-        return true;
+        return newAccount;
     }
 
     @Override
-    BigDecimal getAccountBalance(Long id){
+    public BigDecimal getAccountBalance(Long id){
         BigDecimal balance = null;
         String sql = "SELECT balance FROM account WHERE user_id = ?;";
-        //Need correct exception
+        //DAO is the correct exception, we just need to import it.
         try{
             SqlRowSet result = jdbcTemplate.queryForRowSet(sql, id);
             if(result.next()){
                 balance = mapRowToAccount(result).getBalance();
             }
         }catch(CannotGetJdbcConnectionException e){
-            throw new CannotGetJdbcConnectionException("Unable to connect to server or database");
+            throw new DaoException("Unable to connect to server or database");
         }
 
 
@@ -54,8 +56,8 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    BigDecimal updateBalance(){
-
+    public BigDecimal updateBalance(){
+        return null;
     }
 
     private Account mapRowToAccount(SqlRowSet rs){
