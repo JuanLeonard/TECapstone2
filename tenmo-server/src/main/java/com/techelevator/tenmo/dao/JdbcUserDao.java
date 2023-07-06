@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -69,9 +70,8 @@ public class JdbcUserDao implements UserDao {
         } catch (DataAccessException e) {
             return false;
         }
-        try{
-            //accountDao.createAccount()
-        }catch ()
+        //Account accountBalance = new Account();
+        //accountDao.createAccount(newUserId, accountBalance);
 
 
         return true;
