@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public interface AccountDao {
 
-    Account createAccount(Long id);
+    void createAccount(Long id);
 
     BigDecimal getAccountBalance(Long id);
 

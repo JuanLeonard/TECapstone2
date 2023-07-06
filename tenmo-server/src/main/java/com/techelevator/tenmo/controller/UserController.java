@@ -5,6 +5,7 @@ import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.model.UserDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user")
-@PreAuthorize("isAuthenticated()")
+//@PreAuthorize("isAuthenticated()")
 public class UserController {
 
     private UserDao userDao;
@@ -27,9 +28,12 @@ public class UserController {
     }
 
     @GetMapping("")
-    public User get(String username){
+    public UserDTO get(String username){
         User user = userDao.findByUsername(username);
-        return user;
+        UserDTO userDTO=new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        return userDTO;
     }
 
 }

@@ -24,23 +24,23 @@ public class JdbcAccountDao implements AccountDao {
     //BigDecimal balance = account.getBalance();
 
     @Override
-    public Account createAccount(Long id){
+    public void createAccount(Long user_id){
         String sql = "INSERT INTO account (user_id, balance) VALUES (?, ?) RETURNING account_id;";
         Account newAccount = new Account();
         try{
-            newAccount = jdbcTemplate.queryForObject(sql, Account.class, id, newAccount.getBalance());
+           int newAccountId = jdbcTemplate.queryForObject(sql, int.class, user_id, newAccount.getBalance());
         }catch(CannotGetJdbcConnectionException e){
             throw new DaoException("Unable to connect to server or database", e);
         }catch(DataIntegrityViolationException e){
             throw new DaoException("Data integrity violation", e);
         }
-        return newAccount;
+
     }
 
     @Override
     public BigDecimal getAccountBalance(Long id){
         BigDecimal balance = null;
-        String sql = "SELECT balance FROM account WHERE user_id = ?;";
+        String sql = "SELECT account_id,user_id,balance FROM account WHERE user_id = ?;";
         //DAO is the correct exception, we just need to import it.
         try{
             SqlRowSet result = jdbcTemplate.queryForRowSet(sql, id);
