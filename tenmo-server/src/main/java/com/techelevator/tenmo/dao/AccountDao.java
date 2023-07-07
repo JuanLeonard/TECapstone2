@@ -13,5 +13,5 @@ public interface AccountDao {
     Account getAccountByUserId(Long userId);
 
     BigDecimal updateBalance();
-
+    // money movement method called after status changed to approved and acceptable transfer =true in request or after send money and acceptable transfer = true
 }

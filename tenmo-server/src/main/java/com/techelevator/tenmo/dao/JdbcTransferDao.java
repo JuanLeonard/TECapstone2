@@ -1,64 +1,114 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.exception.DaoException;
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
+@Component
 public class JdbcTransferDao implements TransferDao{
 
     private JdbcTemplate jdbcTemplate;
+    private UserDao userDao;
 
     public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
-    public BigDecimal sendMoney(BigDecimal amount){
+    public Transfer sendMoney(Account toUserAccount, Account fromUserAccount, BigDecimal amount) {
+        Transfer transfer = new Transfer();
+        String status = "approved";
+        String transferType = "send";
         String sql = "INSERT INTO transfer (to_user, from_user, transfer_type, transfer_amount, transfer_status) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
-        //From user is principal in this case
-        //You can't send money to yourself
-        return null;
-    }
+        String sqlQuery = "SELECT transfer_id,to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE transfer_id=?";
+        try {
+            int transferId = jdbcTemplate.queryForObject(sql, int.class, toUserAccount.getUserId(), fromUserAccount.getUserId(), transferType, amount, status);
+
+
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, transferId);
+            if (rowSet.next()) {
+                transfer = mapRowToTransfer(rowSet);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+
+            return transfer;
+
+
+           
+           
+
+
+        }
+
+
 
     @Override
     public BigDecimal requestMoney(BigDecimal amount){
         return null;
     }
 
-//    @Override
-////    public List<Transfer> list(){
-////
-//////            List<User> users = new ArrayList<>();
-//////            String sql = "SELECT user_id, username, password_hash FROM tenmo_user;";
-//////            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-//////            while(results.next()) {
-//////                User user = mapRowToUser(results);
-//////                users.add(user);
-//////            }
-//////            return users;
-////
-////    }
+    @Override//create objects for inputs
+    public List<Transfer> listOfTransfersById(){//principal as parameter in controller??
 
-    @Override
-    public List<Transfer> getAllTransferDetails(){
-        return null;
-    }
+            List<Transfer> transfers = new ArrayList<>();
+            String sql = "SELECT transfer_id, to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE to_user = ? || from_user = ?;";
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+            while(results.next()) {
+                Transfer transfer = mapRowToTransfer(results);
+                transfers.add(transfer);
+            }
+           return transfers;
 
-    @Override
-    public List<Transfer> listByStatus(){
-        return null;
     }
 
 
+    @Override
+    public Transfer getAllTransferDetails(Long transferId){
+        Transfer transfers= new Transfer();
+        String sql = "SELECT transfer_id, to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE transfer_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
+        if(results.next()) {
+            mapRowToTransfer(results);
+           
+        }
+        return transfers;
 
-    private Transfer mapRowToUser(SqlRowSet rs){
+            }
+
+    @Override
+    public List<Transfer> listByStatus(Transfer status){
+            List<Transfer> transfers = new ArrayList<>();
+            String sql = "SELECT transfer_id, to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE status = ?;";
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+            while(results.next()) {
+                Transfer transfer = mapRowToTransfer(results);
+                transfers.add(transfer);
+            }
+            return transfers;
+
+    }
+
+
+
+    private Transfer mapRowToTransfer(SqlRowSet rs){
         Transfer transfer = new Transfer();
-        transfer.setId(rs.getLong("transfer_id"));
+        transfer.setTransferId(rs.getLong("transfer_id"));
+        transfer.setToUser(rs.getLong("to_user"));
+        transfer.setFromUser(rs.getLong("from_user"));
         transfer.setAmount(rs.getBigDecimal("transfer_amount"));
         transfer.setStatus(rs.getString("transfer_status"));
         transfer.setType(rs.getString("transfer_type"));

@@ -7,28 +7,32 @@ import java.math.BigDecimal;
 
 public class Transfer {
 
-    private Long id;
+    private Long transferId;
     private String type;
     @Positive(message = "Cannot be zero or negative.")
     @NotEmpty
     private BigDecimal amount;
+    private long toUser;
+    private long fromUser;
     private String status;
 
     public Transfer() {}
 
-    public Transfer(Long id, String type, BigDecimal amount, String status){
-        this.id = id;
+    public Transfer(Long transferId, String type, BigDecimal amount,long toUser, long fromUser, String status){
+        this.transferId = transferId;
         this.type = type;
         this.amount = amount;
+        this.toUser=toUser;
+        this.fromUser=fromUser;
         this.status = status;
     }
 
-    public Long getId() {
-        return id;
+    public Long getTransferId() {
+        return transferId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTransferId(Long transferId) {
+        this.transferId = transferId;
     }
 
     public String getType() {
@@ -53,5 +57,21 @@ public class Transfer {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public long getToUser() {
+        return toUser;
+    }
+
+    public void setToUser(long toUser) {
+        this.toUser = toUser;
+    }
+
+    public long getFromUser() {
+        return fromUser;
+    }
+
+    public void setFromUser(long fromUser) {
+        this.fromUser = fromUser;
     }
 }

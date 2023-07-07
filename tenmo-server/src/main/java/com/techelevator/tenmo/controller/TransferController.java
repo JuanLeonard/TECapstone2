@@ -3,9 +3,12 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.Transfer;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.techelevator.tenmo.model.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/transfer")
@@ -21,5 +24,40 @@ public class TransferController {
         this.accountDao = accountDao;
     }
 
+    
+
+@GetMapping("/recipientList")//to show list of users to either request from or send to.
+    public List<User> findAll(){
+        List<User> recipientList= userDao.findAll();
+                return recipientList;
+}
+
+    @PostMapping("")//once transfer is initiated before money movement
+    //if toUser=principal then return exception and amount > fromUser.getBalance() return exception
+    
+    public Transfer acceptableTransfer(@RequestBody TransferDTO transferDTO, Principal principal){
+        Transfer transfer=new Transfer();
+
+        User user = userDao.findByUsername(principal.getName());
+        BigDecimal amount=transferDTO.getAmount();
+        BigDecimal balance= accountDao.getAccountByUserId(user.getId()).getBalance();
+        if((transferDTO.getToUser()!= user.getId()) && (amount.compareTo(balance)==-1)){
+
+        Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
+        Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
+        toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
+        fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
+        transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
+        }//add try catch so exception message shows if conditions aren't met
+            return transfer;
+    }
+    @GetMapping("/details/{transferId}")
+    public Transfer getAllTransferDetails(@PathVariable Long transferId){
+        Transfer transferDetails=transferDao.getAllTransferDetails(transferId);
+        return transferDetails;
+    }
+
 
 }
+
+

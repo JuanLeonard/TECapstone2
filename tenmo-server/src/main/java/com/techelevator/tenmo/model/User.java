@@ -10,8 +10,9 @@ public class User {
 
    private Long id;
    private String username;
-   //@JsonIgnore
+   @JsonIgnore
    private String password;
+   @JsonIgnore
    private boolean activated;
    private Set<Authority> authorities = new HashSet<>();
 

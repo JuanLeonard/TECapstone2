@@ -24,11 +24,11 @@ public class JdbcAccountDao implements AccountDao {
     //BigDecimal balance = account.getBalance();
 
     @Override
-    public void createAccount(Long user_id){
+    public void createAccount(Long userId){
         String sql = "INSERT INTO account (user_id, balance) VALUES (?, ?) RETURNING account_id;";
         Account newAccount = new Account();
         try{
-           int newAccountId = jdbcTemplate.queryForObject(sql, int.class, user_id, newAccount.getBalance());
+           int newAccountId = jdbcTemplate.queryForObject(sql, int.class, userId, newAccount.getBalance());
         }catch(CannotGetJdbcConnectionException e){
             throw new DaoException("Unable to connect to server or database", e);
         }catch(DataIntegrityViolationException e){
@@ -81,8 +81,8 @@ public class JdbcAccountDao implements AccountDao {
 
     private Account mapRowToAccount(SqlRowSet rs){
         Account account = new Account();
-        account.setId(rs.getLong("account_id"));
-        account.setId(rs.getLong("user_id"));
+        account.setAccountId(rs.getLong("account_id"));
+        account.setUserId(rs.getLong("user_id"));
         account.setBalance(rs.getBigDecimal("balance"));
         return account;
     }

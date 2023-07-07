@@ -4,8 +4,27 @@ import java.math.BigDecimal;
 
 public class TransferDTO {
 
-    private Long id;
+    private Long transferId;
     private String type;
+    private long toUser;
+
+    public long getToUser() {
+        return toUser;
+    }
+
+    public void setToUser(long toUser) {
+        this.toUser = toUser;
+    }
+
+    public long getFromUser() {
+        return fromUser;
+    }
+
+    public void setFromUser(long fromUser) {
+        this.fromUser = fromUser;
+    }
+
+    private long fromUser;
 
     private BigDecimal amount;
 
@@ -25,8 +44,8 @@ public class TransferDTO {
         this.amount = amount;
     }
 
-    public Long getId() {
-        return id;
+    public Long getTransferId() {
+        return transferId;
     }
 
 }
