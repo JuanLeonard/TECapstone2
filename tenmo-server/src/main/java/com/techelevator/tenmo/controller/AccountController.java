@@ -29,11 +29,19 @@ public class AccountController {
     @GetMapping("/balance")
     public BalanceDTO getAccountBalance(Principal principal){
 
-        User user= userDao.findByUsername(principal.getName());
-        //Account account = accountDao.getAccountByUserId(user.getId());
+        User user = userDao.findByUsername(principal.getName());
+        Account account = accountDao.getAccountByUserId(user.getId());
         BalanceDTO balance = new BalanceDTO();
-       //balance.setBalance(new BigDecimal(account.getBalance));
+        balance.setBalance(account.getBalance());
         return balance;
+    }
+
+    @GetMapping("/{id}")
+    public Account getAccountByUserId(Principal principal, Long userId){
+        User user = userDao.findByUsername(principal.getName());
+        //Account account = accountDao.getAccountByUserId(user.getId());
+        Account account = accountDao.getAccountByUserId(userId);
+        return account;
     }
 
 }

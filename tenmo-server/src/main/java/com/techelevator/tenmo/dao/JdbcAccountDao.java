@@ -56,6 +56,25 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
+    public Account getAccountByUserId(Long userId){
+        Account account = null;
+        String sql = "SELECT account_id,user_id,balance FROM account WHERE user_id = ?;";
+        //DAO is the correct exception, we just need to import it.
+        try{
+            SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId);
+            if(result.next()){
+                account = mapRowToAccount(result);
+            }
+        }catch(CannotGetJdbcConnectionException e){
+            throw new DaoException("Unable to connect to server or database");
+        }
+
+
+        return account;
+    }
+
+
+    @Override
     public BigDecimal updateBalance(){
         return null;
     }

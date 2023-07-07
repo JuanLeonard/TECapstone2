@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -17,6 +18,10 @@ public class JdbcTransferDao implements TransferDao{
     }
     @Override
     public BigDecimal sendMoney(BigDecimal amount){
+        String sql = "INSERT INTO transfer (to_user, from_user, transfer_type, transfer_amount, transfer_status) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
+        //From user is principal in this case
+        //You can't send money to yourself
         return null;
     }
 
@@ -25,10 +30,19 @@ public class JdbcTransferDao implements TransferDao{
         return null;
     }
 
-    @Override
-    public List<Transfer> list(){
-        return null;
-    }
+//    @Override
+////    public List<Transfer> list(){
+////
+//////            List<User> users = new ArrayList<>();
+//////            String sql = "SELECT user_id, username, password_hash FROM tenmo_user;";
+//////            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+//////            while(results.next()) {
+//////                User user = mapRowToUser(results);
+//////                users.add(user);
+//////            }
+//////            return users;
+////
+////    }
 
     @Override
     public List<Transfer> getAllTransferDetails(){
