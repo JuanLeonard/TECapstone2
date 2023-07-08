@@ -35,7 +35,7 @@ public class TransferController {
     @PostMapping("")//once transfer is initiated before money movement
     //if toUser=principal then return exception and amount > fromUser.getBalance() return exception
     
-    public Transfer acceptableTransfer(@RequestBody TransferDTO transferDTO, Principal principal){
+    public Transfer verifiedTransfer(@RequestBody TransferDTO transferDTO, Principal principal){
         Transfer transfer=new Transfer();
 
         User user = userDao.findByUsername(principal.getName());
