@@ -3,7 +3,9 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -32,6 +34,7 @@ public class TransferController {
                 return recipientList;
 }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")//once transfer is initiated before money movement
     //if toUser=principal then return exception and amount > fromUser.getBalance() return exception
     
@@ -48,7 +51,9 @@ public class TransferController {
         toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
         fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
         transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
-        }//add try catch so exception message shows if conditions aren't met
+        }else{
+            throw new DaoException("Transfer could not occur."); //add try catch so exception message shows if conditions aren't met
+        }
             return transfer;
     }
     @GetMapping("/details/{transferId}")
