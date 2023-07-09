@@ -3,7 +3,9 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -32,10 +34,11 @@ public class TransferController {
                 return recipientList;
 }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")//once transfer is initiated before money movement
     //if toUser=principal then return exception and amount > fromUser.getBalance() return exception
     
-    public Transfer acceptableTransfer(@RequestBody TransferDTO transferDTO, Principal principal){
+    public Transfer verifiedTransfer(@RequestBody TransferDTO transferDTO, Principal principal){
         Transfer transfer=new Transfer();
 
         User user = userDao.findByUsername(principal.getName());
@@ -43,12 +46,23 @@ public class TransferController {
         BigDecimal balance= accountDao.getAccountByUserId(user.getId()).getBalance();
         if((transferDTO.getToUser()!= user.getId()) && (amount.compareTo(balance)==-1)){
 
+<<<<<<< HEAD
             Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
             Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
             toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
             fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
             transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
         }//add try catch so exception message shows if conditions aren't met
+=======
+        Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
+        Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
+        toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
+        fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
+        transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
+        }else{
+            throw new DaoException("Transfer could not occur."); //add try catch so exception message shows if conditions aren't met
+        }
+>>>>>>> 8ec4b763a195db13cd79d3b58cd6d74641de17c4
             return transfer;
     }
     @GetMapping("/details/{transferId}")
