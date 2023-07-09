@@ -65,7 +65,7 @@ public class JdbcTransferDao implements TransferDao{
     public List<Transfer> listOfTransfersById(Long fromUserId, Long toUserId){
 
             List<Transfer> transfers = new ArrayList<>();
-            String sql = "SELECT transfer_id, to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE to_user = ? || from_user = ?;";
+            String sql = "SELECT transfer_id, to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE to_user = ? OR from_user = ?;";
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, toUserId, fromUserId);
             while(results.next()) {
                 Transfer transfer = mapRowToTransfer(results);

@@ -35,9 +35,8 @@ public class TransferController {
 }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("")//once transfer is initiated before money movement
+    @PostMapping("/sendTransfer")//once transfer is initiated before money movement
     //if toUser=principal then return exception and amount > fromUser.getBalance() return exception
-    
     public Transfer verifiedTransfer(@RequestBody TransferDTO transferDTO, Principal principal){
         Transfer transfer=new Transfer();
 
