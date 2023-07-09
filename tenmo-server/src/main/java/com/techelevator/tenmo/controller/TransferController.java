@@ -61,6 +61,15 @@ public class TransferController {
         Transfer transferDetails=transferDao.getAllTransferDetails(transferId);
         return transferDetails;
     }
+    @GetMapping("/listMyTransfers")
+    public List<Transfer> listMyTransfers(Principal principal, Long fromUserId, Long toUserId){
+        User fromUser=userDao.findByUsername(principal.getName());
+        User toUser=userDao.findByUsername(principal.getName());
+
+        List<Transfer> myTransfersList=transferDao.listOfTransfersById(fromUser.getId(), toUser.getId());
+        return myTransfersList;
+    }
+
 
 
 }

@@ -62,11 +62,11 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override//create objects for inputs
-    public List<Transfer> listOfTransfersById(){//principal as parameter in controller??
+    public List<Transfer> listOfTransfersById(Long fromUserId, Long toUserId){
 
             List<Transfer> transfers = new ArrayList<>();
             String sql = "SELECT transfer_id, to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE to_user = ? || from_user = ?;";
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, toUserId, fromUserId);
             while(results.next()) {
                 Transfer transfer = mapRowToTransfer(results);
                 transfers.add(transfer);

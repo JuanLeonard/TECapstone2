@@ -13,7 +13,7 @@ public interface TransferDao {
 
     BigDecimal requestMoney(BigDecimal amount);
 
-    List<Transfer> listOfTransfersById();
+    List<Transfer> listOfTransfersById(Long toUserId, Long fromUserId);
 
     Transfer getAllTransferDetails(Long transferId);
 
