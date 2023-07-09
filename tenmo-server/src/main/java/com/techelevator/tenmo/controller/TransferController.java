@@ -24,7 +24,7 @@ public class TransferController {
         this.accountDao = accountDao;
     }
 
-    
+
 
 @GetMapping("/recipientList")//to show list of users to either request from or send to.
     public List<User> findAll(){
@@ -43,11 +43,11 @@ public class TransferController {
         BigDecimal balance= accountDao.getAccountByUserId(user.getId()).getBalance();
         if((transferDTO.getToUser()!= user.getId()) && (amount.compareTo(balance)==-1)){
 
-        Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
-        Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
-        toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
-        fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
-        transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
+            Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
+            Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
+            toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
+            fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
+            transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
         }//add try catch so exception message shows if conditions aren't met
             return transfer;
     }
