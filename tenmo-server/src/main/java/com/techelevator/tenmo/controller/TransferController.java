@@ -46,14 +46,6 @@ public class TransferController {
         BigDecimal balance= accountDao.getAccountByUserId(user.getId()).getBalance();
         if((transferDTO.getToUser()!= user.getId()) && (amount.compareTo(balance)==-1)){
 
-<<<<<<< HEAD
-            Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
-            Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
-            toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
-            fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
-            transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
-        }//add try catch so exception message shows if conditions aren't met
-=======
         Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
         Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
         toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
@@ -62,7 +54,7 @@ public class TransferController {
         }else{
             throw new DaoException("Transfer could not occur."); //add try catch so exception message shows if conditions aren't met
         }
->>>>>>> 8ec4b763a195db13cd79d3b58cd6d74641de17c4
+
             return transfer;
     }
     @GetMapping("/details/{transferId}")
