@@ -6,6 +6,7 @@ import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exception.DaoException;
 import com.techelevator.tenmo.model.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -34,6 +35,7 @@ public class TransferController {
                 return recipientList;
 }
 
+    @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/sendTransfer")//once transfer is initiated before money movement
     //if toUser=principal then return exception and amount > fromUser.getBalance() return exception
@@ -43,11 +45,14 @@ public class TransferController {
         User user = userDao.findByUsername(principal.getName());
         BigDecimal amount=transferDTO.getAmount();
         BigDecimal balance= accountDao.getAccountByUserId(user.getId()).getBalance();
+
         if((transferDTO.getToUser()!= user.getId()) && (amount.compareTo(balance)==-1)){
 
         Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
-        Account fromUserAccount=accountDao.getAccountByUserId(transferDTO.getFromUser());
-        toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
+        Account fromUserAccount=accountDao.getAccountByUserId(user.getId());
+        BigDecimal newBalance = new BigDecimal(0);
+        //newBalance = toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
+            newBalance = toUserAccount.getBalance().add(amount);
         fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
         transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
         }else{
@@ -56,11 +61,15 @@ public class TransferController {
 
             return transfer;
     }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/details/{transferId}")
     public Transfer getAllTransferDetails(@PathVariable Long transferId){
         Transfer transferDetails=transferDao.getAllTransferDetails(transferId);
         return transferDetails;
     }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listMyTransfers")
     public List<Transfer> listMyTransfers(Principal principal, Long fromUserId, Long toUserId){
         User fromUser=userDao.findByUsername(principal.getName());

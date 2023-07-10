@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Account {
 
-    private BigDecimal balance = BigDecimal.valueOf(1000.00);
+    private BigDecimal balance;
     private Long accountId;
     private Long userId;
 

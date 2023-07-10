@@ -32,7 +32,7 @@ public class JdbcTransferDao implements TransferDao{
                 "VALUES (?, ?, ?, ?, ?) RETURNING transfer_id;";
         String sqlQuery = "SELECT transfer_id,to_user, from_user, transfer_type, transfer_amount, transfer_status FROM transfer WHERE transfer_id=?";
         try {
-            int transferId = jdbcTemplate.queryForObject(sql, int.class, toUserAccount.getUserId(), fromUserAccount.getUserId(), transferType, amount, status);
+            Long transferId = jdbcTemplate.queryForObject(sql, long.class, toUserAccount.getUserId(), fromUserAccount.getUserId(), transferType, amount, status);
 
 
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, transferId);

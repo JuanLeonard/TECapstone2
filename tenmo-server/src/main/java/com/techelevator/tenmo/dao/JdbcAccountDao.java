@@ -28,7 +28,7 @@ public class JdbcAccountDao implements AccountDao {
         String sql = "INSERT INTO account (user_id, balance) VALUES (?, ?) RETURNING account_id;";
         Account newAccount = new Account();
         try{
-           int newAccountId = jdbcTemplate.queryForObject(sql, int.class, userId, newAccount.getBalance());
+           int newAccountId = jdbcTemplate.queryForObject(sql, int.class, userId, 1000);
         }catch(CannotGetJdbcConnectionException e){
             throw new DaoException("Unable to connect to server or database", e);
         }catch(DataIntegrityViolationException e){
@@ -75,8 +75,18 @@ public class JdbcAccountDao implements AccountDao {
 
 
     @Override
-    public BigDecimal updateBalance(){
-        return null;
+    public BigDecimal updateBalance(Long userId, BigDecimal balance){//SQL statement will be
+        BigDecimal updatedBalance = null;
+        String sql = "UPDATE account SET balance = ? WHERE user_id = ?;";
+        try{
+            int numberOfRows = jdbcTemplate.update(sql, balance, userId);
+            if(numberOfRows == 0){
+                throw new DaoException("Zero rows affected, expected at least one");
+            }else{
+                updatedBalance =
+            }
+        }
+        return updatedBalance;
     }
 
     private Account mapRowToAccount(SqlRowSet rs){
