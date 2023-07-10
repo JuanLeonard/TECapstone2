@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
@@ -46,14 +47,16 @@ public class TransferController {
         BigDecimal amount=transferDTO.getAmount();
         BigDecimal balance= accountDao.getAccountByUserId(user.getId()).getBalance();
 
-        if((transferDTO.getToUser()!= user.getId()) && (amount.compareTo(balance)==-1)){
+        if((transferDTO.getToUser()!= user.getId()) && (amount.compareTo(BigDecimal.valueOf(0.00))==1) && (amount.compareTo(balance)==-1)){
 
         Account toUserAccount=accountDao.getAccountByUserId(transferDTO.getToUser());
         Account fromUserAccount=accountDao.getAccountByUserId(user.getId());
-        BigDecimal newBalance = new BigDecimal(0);
-        //newBalance = toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
-            newBalance = toUserAccount.getBalance().add(amount);
+
+        toUserAccount.setBalance(toUserAccount.getBalance().add(amount));
+        Account updateToUserBalance= accountDao.updateBalance(toUserAccount);
+
         fromUserAccount.setBalance(fromUserAccount.getBalance().subtract(amount));
+        Account updateFromUserBalance= accountDao.updateBalance(fromUserAccount);
         transfer=transferDao.sendMoney(toUserAccount, fromUserAccount, amount);
         }else{
             throw new DaoException("Transfer could not occur."); //add try catch so exception message shows if conditions aren't met

@@ -75,16 +75,21 @@ public class JdbcAccountDao implements AccountDao {
 
 
     @Override
-    public BigDecimal updateBalance(Long userId, BigDecimal balance){//SQL statement will be
-        BigDecimal updatedBalance = null;
-        String sql = "UPDATE account SET balance = ? WHERE user_id = ?;";
+    public Account updateBalance(Account account){
+        Account updatedBalance = null;
+        String sql = "UPDATE account SET account_id=?,  balance = ? WHERE user_id = ?;";
         try{
-            int numberOfRows = jdbcTemplate.update(sql, balance, userId);
+            int numberOfRows = jdbcTemplate.update(sql,account.getAccountId(), account.getBalance(), account.getUserId());
             if(numberOfRows == 0){
                 throw new DaoException("Zero rows affected, expected at least one");
             }else{
-                updatedBalance =
+               updatedBalance= getAccountByUserId(account.getUserId());
+
             }
+        }catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
         }
         return updatedBalance;
     }
